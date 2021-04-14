@@ -1,10 +1,15 @@
 // @ts-check
 
-import React from "react";
+import React, { MouseEventHandler } from "react";
 import ReactDOM from "react-dom";
 import "./index.css";
 
-function Square(props) {
+type squareProps = {
+  value: string;
+  onClick: MouseEventHandler;
+};
+
+function Square(props: squareProps) {
   return (
     <button className="square" onClick={props.onClick}>
       {props.value}
@@ -12,8 +17,13 @@ function Square(props) {
   );
 }
 
-class Board extends React.Component {
-  renderSquare(i) {
+type boardProps = {
+  squares: Array<string>;
+  onClick: Function;
+};
+
+class Board extends React.Component<boardProps> {
+  renderSquare(i: number) {
     return (
       <Square
         value={this.props.squares[i]}
@@ -45,8 +55,16 @@ class Board extends React.Component {
   }
 }
 
-class Game extends React.Component {
-  constructor(props) {
+type gameProps = {};
+class Game extends React.Component<
+  gameProps,
+  {
+    history: Array<{ squares: Array<string> }>;
+    stepNumber: number;
+    xIsNext: boolean;
+  }
+> {
+  constructor(props: gameProps) {
     super(props);
     this.state = {
       history: [
@@ -59,7 +77,7 @@ class Game extends React.Component {
     };
   }
 
-  handleClick(i) {
+  handleClick(i: number) {
     const history = this.state.history.slice(0, this.state.stepNumber + 1);
     const current = history[history.length - 1];
     const squares = current.squares.slice();
@@ -78,7 +96,7 @@ class Game extends React.Component {
     });
   }
 
-  jumpTo(step) {
+  jumpTo(step: number) {
     this.setState({
       stepNumber: step,
       xIsNext: step % 2 === 0,
@@ -111,7 +129,7 @@ class Game extends React.Component {
         <div className="game-board">
           <Board
             squares={current.squares}
-            onClick={(i) => this.handleClick(i)}
+            onClick={(i: number) => this.handleClick(i)}
           />
         </div>
         <div className="game-info">
@@ -127,7 +145,7 @@ class Game extends React.Component {
 
 ReactDOM.render(<Game />, document.getElementById("root"));
 
-function calculateWinner(squares) {
+function calculateWinner(squares: string[]) {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
